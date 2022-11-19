@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Notification;
 use App\ModLog;
 use App\Services\ModLogService;
 use Log;

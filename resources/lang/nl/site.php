@@ -1,4 +1,5 @@
 <?php
+
 return [
     'about'             => 'Over ons',
     'help'              => 'Ondersteuning',

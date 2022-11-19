@@ -3,8 +3,6 @@
 namespace Tests\Unit\Lexer;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use App\Status;
@@ -13,14 +11,14 @@ class StatusLexerTest extends TestCase
 {
     public $status;
     public $entities;
-	public $autolink;
+    public $autolink;
 
     public function setUp(): void
     {
         parent::setUp();
-    	$this->status = "@pixelfed hi, really like the website! #píxelfed";
-    	$this->entities = Extractor::create()->extract($this->status);
-    	$this->autolink = Autolink::create()->autolink($this->status);
+        $this->status = "@pixelfed hi, really like the website! #píxelfed";
+        $this->entities = Extractor::create()->extract($this->status);
+        $this->autolink = Autolink::create()->autolink($this->status);
     }
 
     public function testLexerExtractor()

@@ -46,7 +46,7 @@ class SendUpdateActor extends Command
             0
         );
 
-        if($task === 'View top instances') {
+        if ($task === 'View top instances') {
             $this->table(
                 ['domain', 'user_count', 'last_synced'],
                 Instance::orderByDesc('user_count')->take(20)->get(['domain', 'user_count', 'actors_last_synced_at'])->toArray()
@@ -56,11 +56,11 @@ class SendUpdateActor extends Command
             $domain = $this->anticipate('Enter the instance domain', function ($input) {
                 return Instance::where('domain', 'like', '%' . $input . '%')->pluck('domain')->toArray();
             });
-            if(!$this->confirm('Are you sure you want to send actor updates to ' . $domain . '?')) {
+            if (!$this->confirm('Are you sure you want to send actor updates to ' . $domain . '?')) {
                 return;
             }
-            if($cur = Instance::whereDomain($domain)->whereNotNull('actors_last_synced_at')->first()) {
-                if(!$this->option('force')) {
+            if ($cur = Instance::whereDomain($domain)->whereNotNull('actors_last_synced_at')->first()) {
+                if (!$this->option('force')) {
                     $this->error('ERROR: Cannot re-sync this instance, it was already synced on ' . $cur->actors_last_synced_at);
                     return;
                 }
@@ -69,7 +69,7 @@ class SendUpdateActor extends Command
             $this->line(' ');
             $this->error('Keep this window open during this process or it will not complete!');
             $sharedInbox = Profile::whereDomain($domain)->whereNotNull('sharedInbox')->first();
-            if(!$sharedInbox) {
+            if (!$sharedInbox) {
                 $this->error('ERROR: Cannot find the sharedInbox of ' . $domain);
                 return;
             }
@@ -80,14 +80,14 @@ class SendUpdateActor extends Command
             $bar->start();
 
             $startCache = $this->getStorageCache($domain);
-            User::whereNull('status')->when($startCache, function($query, $startCache) use($bar) {
+            User::whereNull('status')->when($startCache, function ($query, $startCache) use ($bar) {
                 $bar->advance($startCache);
                 return $query->where('id', '>', $startCache);
-            })->chunk(50, function($users) use($bar, $url, $domain) {
-                foreach($users as $user) {
+            })->chunk(50, function ($users) use ($bar, $url, $domain) {
+                foreach ($users as $user) {
                     $this->updateStorageCache($domain, $user->id);
                     $profile = Profile::find($user->profile_id);
-                    if(!$profile) {
+                    if (!$profile) {
                         continue;
                     }
                     $body = $this->updateObject($profile);
@@ -131,7 +131,7 @@ class SendUpdateActor extends Command
     protected function touchStorageCache($domain)
     {
         $path = 'actor-update-cache/' . $domain;
-        if(!Storage::exists($path)) {
+        if (!Storage::exists($path)) {
             Storage::put($path, "");
         }
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use DB, Cache;
+use Cache;
 use App\{
     DiscoverCategory,
     DiscoverCategoryHashtag,
@@ -17,9 +17,7 @@ use App\Models\ConfigCache;
 use App\Services\AccountService;
 use App\Services\ConfigCacheService;
 use App\Services\StatusService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use League\ISO3166\ISO3166;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -38,37 +36,37 @@ trait AdminDirectoryController
     {
         $res = [];
 
-        $res['countries'] = collect((new ISO3166)->all())->pluck('name');
+        $res['countries'] = collect((new ISO3166())->all())->pluck('name');
         $res['admins'] = User::whereIsAdmin(true)
             ->where('2fa_enabled', true)
-            ->get()->map(function($user) {
-            return [
-                'uid' => (string) $user->id,
-                'pid' => (string) $user->profile_id,
-                'username' => $user->username,
-                'created_at' => $user->created_at
-            ];
-        });
+            ->get()->map(function ($user) {
+                return [
+                    'uid' => (string) $user->id,
+                    'pid' => (string) $user->profile_id,
+                    'username' => $user->username,
+                    'created_at' => $user->created_at
+                ];
+            });
         $config = ConfigCache::whereK('pixelfed.directory')->first();
-        if($config) {
+        if ($config) {
             $data = $config->v ? json_decode($config->v, true) : [];
             $res = array_merge($res, $data);
         }
 
-        if(empty($res['summary'])) {
+        if (empty($res['summary'])) {
             $summary = ConfigCache::whereK('app.short_description')->pluck('v');
             $res['summary'] = $summary ? $summary[0] : null;
         }
 
-        if(isset($res['banner_image']) && !empty($res['banner_image'])) {
+        if (isset($res['banner_image']) && !empty($res['banner_image'])) {
             $res['banner_image'] = url(Storage::url($res['banner_image']));
         }
 
-        if(isset($res['favourite_posts'])) {
-            $res['favourite_posts'] = collect($res['favourite_posts'])->map(function($id) {
+        if (isset($res['favourite_posts'])) {
+            $res['favourite_posts'] = collect($res['favourite_posts'])->map(function ($id) {
                 return StatusService::get($id);
             })
-            ->filter(function($post) {
+            ->filter(function ($post) {
                 return $post && isset($post['account']);
             })
             ->values();
@@ -93,9 +91,9 @@ trait AdminDirectoryController
             'account_deletion' => config_cache('pixelfed.account_deletion'),
         ];
 
-        if(config_cache('pixelfed.directory.testimonials')) {
-            $testimonials = collect(json_decode(config_cache('pixelfed.directory.testimonials'),true))
-                ->map(function($t) {
+        if (config_cache('pixelfed.directory.testimonials')) {
+            $testimonials = collect(json_decode(config_cache('pixelfed.directory.testimonials'), true))
+                ->map(function ($t) {
                     return [
                         'profile' => AccountService::get($t['profile_id']),
                         'body' => $t['body']
@@ -108,10 +106,10 @@ trait AdminDirectoryController
             'media_types' => [
                 'required',
                  function ($attribute, $value, $fail) {
-                    if (!in_array('image/jpeg', $value->toArray()) || !in_array('image/png', $value->toArray())) {
-                        $fail('You must enable image/jpeg and image/png support.');
-                    }
-                },
+                     if (!in_array('image/jpeg', $value->toArray()) || !in_array('image/png', $value->toArray())) {
+                         $fail('You must enable image/jpeg and image/png support.');
+                     }
+                 },
             ],
             'image_quality' => 'required_if:optimize_image,true|integer|min:75|max:100',
             'max_altext_length' => 'required|integer|min:1000|max:5000',
@@ -145,11 +143,11 @@ trait AdminDirectoryController
         foreach (new \DirectoryIterator($path) as $io) {
             $name = $io->getFilename();
             $skip = ['vendor'];
-            if($io->isDot() || in_array($name, $skip)) {
+            if ($io->isDot() || in_array($name, $skip)) {
                 continue;
             }
 
-            if($io->isDir()) {
+            if ($io->isDir()) {
                 $langs->push(['code' => $name, 'name' => locale_get_display_name($name)]);
             }
         }
@@ -168,15 +166,15 @@ trait AdminDirectoryController
 
     protected function validVal($res, $val, $count = false, $minLen = false)
     {
-        if(!isset($res[$val])) {
+        if (!isset($res[$val])) {
             return false;
         }
 
-        if($count) {
+        if ($count) {
             return count($res[$val]) >= $count;
         }
 
-        if($minLen) {
+        if ($minLen) {
             return strlen($res[$val]) >= $minLen;
         }
 
@@ -207,16 +205,16 @@ trait AdminDirectoryController
         $res['contact_email'] = $request->input('contact_email');
         $res['privacy_pledge'] = (bool) $request->input('privacy_pledge');
 
-        if($request->filled('location')) {
-            $exists = (new ISO3166)->name($request->location);
-            if($exists) {
+        if ($request->filled('location')) {
+            $exists = (new ISO3166())->name($request->location);
+            if ($exists) {
                 $res['location'] = $request->input('location');
             }
         }
 
-        if($request->hasFile('banner_image')) {
+        if ($request->hasFile('banner_image')) {
             collect(Storage::files('public/headers'))
-            ->filter(function($name) {
+            ->filter(function ($name) {
                 $protected = [
                     'public/headers/.gitignore',
                     'public/headers/default.jpg',
@@ -224,7 +222,7 @@ trait AdminDirectoryController
                 ];
                 return !in_array($name, $protected);
             })
-            ->each(function($name) {
+            ->each(function ($name) {
                 Storage::delete($name);
             });
             $path = $request->file('banner_image')->store('public/headers');
@@ -239,7 +237,7 @@ trait AdminDirectoryController
 
         ConfigCacheService::put('pixelfed.directory', $config->v);
         $updated = json_decode($config->v, true);
-        if(isset($updated['banner_image'])) {
+        if (isset($updated['banner_image'])) {
             $updated['banner_image'] = url(Storage::url($updated['banner_image']));
         }
         return $updated;
@@ -271,10 +269,10 @@ trait AdminDirectoryController
             'media_types' => [
                 'required',
                  function ($attribute, $value, $fail) {
-                    if (!in_array('image/jpeg', $value->toArray()) || !in_array('image/png', $value->toArray())) {
-                        $fail('You must enable image/jpeg and image/png support.');
-                    }
-                },
+                     if (!in_array('image/jpeg', $value->toArray()) || !in_array('image/png', $value->toArray())) {
+                         $fail('You must enable image/jpeg and image/png support.');
+                     }
+                 },
             ],
             'image_quality' => 'required_if:optimize_image,true|integer|min:75|max:100',
             'max_altext_length' => 'required|integer|min:1000|max:5000',
@@ -285,7 +283,7 @@ trait AdminDirectoryController
             'max_caption_length' => 'required|integer|min:500|max:10000'
         ]);
 
-        if(!$validator->validate()) {
+        if (!$validator->validate()) {
             return response()->json($validator->errors(), 422);
         }
 
@@ -301,7 +299,7 @@ trait AdminDirectoryController
     {
         $bannerImage = ConfigCache::whereK('app.banner_image')->first();
         $directory = ConfigCache::whereK('pixelfed.directory')->first();
-        if(!$bannerImage && !$directory || empty($directory->v)) {
+        if (!$bannerImage && !$directory || empty($directory->v)) {
             return;
         }
         $directoryArr = json_decode($directory->v, true);
@@ -311,10 +309,10 @@ trait AdminDirectoryController
             'public/headers/default.jpg',
             'public/headers/missing.png'
         ];
-        if(!$path || in_array($path, $protected)) {
+        if (!$path || in_array($path, $protected)) {
             return;
         }
-        if(Storage::exists($directoryArr['banner_image'])) {
+        if (Storage::exists($directoryArr['banner_image'])) {
             Storage::delete($directoryArr['banner_image']);
         }
 
@@ -330,7 +328,7 @@ trait AdminDirectoryController
 
     public function directoryGetPopularPosts(Request $request)
     {
-        $ids = Cache::remember('admin:api:popular_posts', 86400, function() {
+        $ids = Cache::remember('admin:api:popular_posts', 86400, function () {
             return Status::whereLocal(true)
                 ->whereScope('public')
                 ->whereType('photo')
@@ -340,10 +338,10 @@ trait AdminDirectoryController
                 ->pluck('id');
         });
 
-        $res = $ids->map(function($id) {
+        $res = $ids->map(function ($id) {
             return StatusService::get($id);
         })
-        ->filter(function($post) {
+        ->filter(function ($post) {
             return $post && isset($post['account']);
         })
         ->values();
@@ -377,7 +375,7 @@ trait AdminDirectoryController
         $profile_id = $request->input('profile_id');
         $testimonials = ConfigCache::whereK('pixelfed.directory.testimonials')->firstOrFail();
         $existing = collect(json_decode($testimonials->v, true))
-            ->filter(function($t) use($profile_id) {
+            ->filter(function ($t) use ($profile_id) {
                 return $t['profile_id'] !== $profile_id;
             })
             ->values();
@@ -436,8 +434,8 @@ trait AdminDirectoryController
 
         $testimonials = $configCache->v ? collect(json_decode($configCache->v, true)) : collect([]);
 
-        $updated = $testimonials->map(function($t) use($profile_id, $body) {
-            if($t['profile_id'] == $profile_id) {
+        $updated = $testimonials->map(function ($t) use ($profile_id, $body) {
+            if ($t['profile_id'] == $profile_id) {
                 $t['body'] = $body;
             }
             return $t;

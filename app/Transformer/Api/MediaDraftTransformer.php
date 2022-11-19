@@ -4,7 +4,6 @@ namespace App\Transformer\Api;
 
 use App\Media;
 use League\Fractal;
-use URL;
 
 class MediaDraftTransformer extends Fractal\TransformerAbstract
 {

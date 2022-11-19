@@ -2,25 +2,23 @@
 
 namespace App\Util\ActivityPub;
 
-use App\Profile;
 use App\Status;
 use League\Fractal;
 use App\Http\Controllers\ProfileController;
-use App\Transformer\ActivityPub\ProfileOutbox;
 use App\Transformer\ActivityPub\Verb\CreateNote;
 
-class Outbox {
-
-	public static function get($profile)
-	{
+class Outbox
+{
+    public static function get($profile)
+    {
         abort_if(!config_cache('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.outbox'), 404);
 
-        if($profile->status != null) {
+        if ($profile->status != null) {
             return ProfileController::accountCheck($profile);
         }
 
-        if($profile->is_private) {
+        if ($profile->is_private) {
             return ['error'=>'403', 'msg' => 'private profile'];
         }
 
@@ -46,6 +44,5 @@ class Outbox {
             'orderedItems' => $res['data']
         ];
         return $outbox;
-	}
-
+    }
 }

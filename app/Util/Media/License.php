@@ -2,8 +2,8 @@
 
 namespace App\Util\Media;
 
-class License {
-
+class License
+{
     public static function get()
     {
         return [
@@ -114,7 +114,7 @@ class License {
     public static function names()
     {
         return collect(self::get())
-            ->map(function($v) {
+            ->map(function ($v) {
                 return $v['title'];
             })
             ->values()
@@ -123,16 +123,16 @@ class License {
 
     public static function nameToId($name)
     {
-    	$license = collect(self::get())
-    		->filter(function($l) use($name) {
-    			return $l['title'] == $name;
-    		})
-    		->first();
+        $license = collect(self::get())
+            ->filter(function ($l) use ($name) {
+                return $l['title'] == $name;
+            })
+            ->first();
 
-    	if(!$license || $license['id'] < 2) {
-    		return null;
-    	}
+        if (!$license || $license['id'] < 2) {
+            return null;
+        }
 
-    	return $license['id'];
+        return $license['id'];
     }
 }

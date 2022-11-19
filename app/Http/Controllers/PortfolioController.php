@@ -22,23 +22,23 @@ class PortfolioController extends Controller
     {
         $user = User::whereUsername($username)->first();
 
-        if(!$user) {
+        if (!$user) {
             return view('portfolio.404');
         }
 
         $portfolio = Portfolio::whereUserId($user->id)->firstOrFail();
         $user = AccountService::get($user->profile_id);
 
-        if($user['locked']) {
+        if ($user['locked']) {
             return view('portfolio.404');
         }
 
-        if($portfolio->active != true) {
-            if(!$request->user()) {
+        if ($portfolio->active != true) {
+            if (!$request->user()) {
                 return view('portfolio.404');
             }
 
-            if($request->user()->profile_id == $user['id']) {
+            if ($request->user()->profile_id == $user['id']) {
                 return redirect(config('portfolio.path') . '/settings');
             }
 
@@ -53,18 +53,18 @@ class PortfolioController extends Controller
         $authed = $request->user();
         $post = StatusService::get($id);
 
-        if(!$post) {
+        if (!$post) {
             return view('portfolio.404');
         }
 
         $user = AccountService::get($post['account']['id']);
         $portfolio = Portfolio::whereProfileId($user['id'])->first();
 
-        if($user['locked'] || $portfolio->active != true) {
+        if ($user['locked'] || $portfolio->active != true) {
             return view('portfolio.404');
         }
 
-        if(!$post || $post['visibility'] != 'public' || $post['pf_type'] != 'photo' || $user['id'] != $post['account']['id']) {
+        if (!$post || $post['visibility'] != 'public' || $post['pf_type'] != 'photo' || $user['id'] != $post['account']['id']) {
             return view('portfolio.404');
         }
 
@@ -77,8 +77,8 @@ class PortfolioController extends Controller
 
         $user = $request->user();
 
-        if(Portfolio::whereProfileId($user->profile_id)->exists() === false) {
-            $portfolio = new Portfolio;
+        if (Portfolio::whereProfileId($user->profile_id)->exists() === false) {
+            $portfolio = new Portfolio();
             $portfolio->profile_id = $user->profile_id;
             $portfolio->user_id = $user->id;
             $portfolio->active = false;
@@ -94,14 +94,14 @@ class PortfolioController extends Controller
 
     public function settings(Request $request)
     {
-        if(!$request->user()) {
+        if (!$request->user()) {
             return redirect(route('home'));
         }
 
         $portfolio = Portfolio::whereUserId($request->user()->id)->first();
 
-        if(!$portfolio) {
-            $portfolio = new Portfolio;
+        if (!$portfolio) {
+            $portfolio = new Portfolio();
             $portfolio->user_id = $request->user()->id;
             $portfolio->profile_id = $request->user()->profile_id;
             $portfolio->save();
@@ -122,8 +122,8 @@ class PortfolioController extends Controller
 
         $portfolio = Portfolio::whereUserId($request->user()->id)->first();
 
-        if(!$portfolio) {
-            $portfolio = new Portfolio;
+        if (!$portfolio) {
+            $portfolio = new Portfolio();
             $portfolio->user_id = $request->user()->id;
             $portfolio->profile_id = $request->user()->profile_id;
             $portfolio->save();
@@ -149,38 +149,40 @@ class PortfolioController extends Controller
     {
         $user = AccountService::get($id, true);
 
-        if(!$user || !isset($user['id'])) {
+        if (!$user || !isset($user['id'])) {
             return response()->json([], 404);
         }
 
         $portfolio = Portfolio::whereProfileId($user['id'])->first();
 
-        if(!$portfolio || !$portfolio->active) {
+        if (!$portfolio || !$portfolio->active) {
             return response()->json([], 404);
         }
 
-        if($portfolio->profile_source === 'custom' && $portfolio->metadata) {
+        if ($portfolio->profile_source === 'custom' && $portfolio->metadata) {
             return $this->getCustomFeed($portfolio);
         }
 
         return $this->getRecentFeed($user['id']);
     }
 
-    protected function getCustomFeed($portfolio) {
-        if(!$portfolio->metadata['posts']) {
+    protected function getCustomFeed($portfolio)
+    {
+        if (!$portfolio->metadata['posts']) {
             return response()->json([], 400);
         }
 
-        return collect($portfolio->metadata['posts'])->map(function($p) {
+        return collect($portfolio->metadata['posts'])->map(function ($p) {
             return StatusService::get($p);
         })
-        ->filter(function($p) {
+        ->filter(function ($p) {
             return $p && isset($p['account']);
         })->values();
     }
 
-    protected function getRecentFeed($id) {
-        $media = Cache::remember('portfolio:recent-feed:' . $id, 3600, function() use($id) {
+    protected function getRecentFeed($id)
+    {
+        $media = Cache::remember('portfolio:recent-feed:' . $id, 3600, function () use ($id) {
             return DB::table('media')
             ->whereProfileId($id)
             ->whereNotNull('status_id')
@@ -190,10 +192,10 @@ class PortfolioController extends Controller
             ->pluck('status_id');
         });
 
-        return $media->map(function($sid) use($id) {
+        return $media->map(function ($sid) use ($id) {
             return StatusService::get($sid);
         })
-        ->filter(function($post) {
+        ->filter(function ($post) {
             return $post &&
                 isset($post['media_attachments']) &&
                 !empty($post['media_attachments']) &&
@@ -210,11 +212,11 @@ class PortfolioController extends Controller
 
         $res = Portfolio::whereUserId($request->user()->id)->get();
 
-        if(!$res) {
+        if (!$res) {
             return [];
         }
 
-        return $res->map(function($p) {
+        return $res->map(function ($p) {
             return [
                 'url' => $p->url(),
                 'pid' => (string) $p->profile_id,
@@ -245,7 +247,7 @@ class PortfolioController extends Controller
 
         $p = Portfolio::whereProfileId($request->input('id'))->whereActive(1)->firstOrFail();
 
-        if(!$p) {
+        if (!$p) {
             return [];
         }
 

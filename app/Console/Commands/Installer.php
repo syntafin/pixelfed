@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
-use \PDO;
+use PDO;
 
 class Installer extends Command
 {
@@ -160,7 +160,6 @@ class Installer extends Command
             $this->info('Exiting Installer.');
             exit;
         }
-
     }
 
     protected function checkFFmpegDependencies()

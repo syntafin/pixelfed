@@ -58,17 +58,17 @@ class AvatarObserver
     public function deleting(Avatar $avatar)
     {
         $path = storage_path('app/'.$avatar->media_path);
-        if( is_file($path) && 
+        if (is_file($path) &&
             $avatar->media_path != 'public/avatars/default.png' &&
             $avatar->media_path != 'public/avatars/default.jpg'
         ) {
             @unlink($path);
         }
 
-        if($avatar->cdn_url) {
+        if ($avatar->cdn_url) {
             $disk = Storage::disk(config('filesystems.cloud'));
             $base = Str::startsWith($avatar->media_path, 'cache/avatars/');
-            if($base && $disk->exists($avatar->media_path)) {
+            if ($base && $disk->exists($avatar->media_path)) {
                 $disk->delete($avatar->media_path);
             }
         }

@@ -6,10 +6,6 @@ use Illuminate\Http\Request;
 use App\Services\MediaTagService;
 use App\MediaTag;
 use App\Notification;
-use App\Profile;
-use App\UserFilter;
-use App\User;
-use Illuminate\Support\Str;
 
 class MediaTagController extends Controller
 {
@@ -42,7 +38,7 @@ class MediaTagController extends Controller
             ->whereProfileId($profile_id)
             ->first();
 
-        if(!$tag) {
+        if (!$tag) {
             return [];
         }
         Notification::whereItemType('App\MediaTag')
@@ -54,6 +50,5 @@ class MediaTagController extends Controller
         MediaTagService::untag($status_id, $profile_id);
 
         return [200];
-
     }
 }

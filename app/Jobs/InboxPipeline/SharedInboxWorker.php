@@ -11,7 +11,10 @@ use Illuminate\Queue\SerializesModels;
 
 class SharedInboxWorker implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $request;
     protected $profile;

@@ -31,6 +31,6 @@ class ProfileOutbox extends Fractal\TransformerAbstract
           ->orderBy('created_at', 'desc')
           ->paginate(10);
 
-        return $this->collection($statuses, new CreateNote);
+        return $this->collection($statuses, new CreateNote());
     }
 }

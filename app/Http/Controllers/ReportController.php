@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Profile;
 use App\Report;
 use App\Status;
-use App\User;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -100,8 +98,8 @@ class ReportController extends Controller
         $object = null;
         $types = [
             // original 3
-            'spam', 
-            'sensitive', 
+            'spam',
+            'sensitive',
             'abusive',
 
             // new
@@ -113,7 +111,7 @@ class ReportController extends Controller
         ];
 
         if (!in_array($reportType, $types)) {
-            if($request->wantsJson()) {
+            if ($request->wantsJson()) {
                 return abort(400, 'Invalid report type');
             } else {
                 return redirect('/timeline')->with('error', 'Invalid report type');
@@ -121,26 +119,26 @@ class ReportController extends Controller
         }
 
         switch ($object_type) {
-        case 'post':
-          $object = Status::findOrFail($object_id);
-          $object_type = 'App\Status';
-          $exists = Report::whereUserId(Auth::id())
-                    ->whereObjectId($object->id)
-                    ->whereObjectType('App\Status')
-                    ->count();
-          break;
+            case 'post':
+                $object = Status::findOrFail($object_id);
+                $object_type = 'App\Status';
+                $exists = Report::whereUserId(Auth::id())
+                          ->whereObjectId($object->id)
+                          ->whereObjectType('App\Status')
+                          ->count();
+                break;
 
-        default:
-            if($request->wantsJson()) {
-                return abort(400, 'Invalid report type');
-            } else {
-                return redirect('/timeline')->with('error', 'Invalid report type');
-            }
-          break;
-      }
+            default:
+                if ($request->wantsJson()) {
+                    return abort(400, 'Invalid report type');
+                } else {
+                    return redirect('/timeline')->with('error', 'Invalid report type');
+                }
+                break;
+        }
 
         if ($exists !== 0) {
-            if($request->wantsJson()) {
+            if ($request->wantsJson()) {
                 return response()->json(200);
             } else {
                 return redirect('/timeline')->with('error', 'You have already reported this!');
@@ -148,7 +146,7 @@ class ReportController extends Controller
         }
 
         if ($object->profile_id == $profile->id) {
-            if($request->wantsJson()) {
+            if ($request->wantsJson()) {
                 return response()->json(200);
             } else {
                 return redirect('/timeline')->with('error', 'You cannot report your own content!');
@@ -165,7 +163,7 @@ class ReportController extends Controller
         $report->message = e($request->input('msg'));
         $report->save();
 
-        if($request->wantsJson()) {
+        if ($request->wantsJson()) {
             return response()->json(200);
         } else {
             return redirect('/timeline')->with('status', 'Report successfully sent!');

@@ -13,58 +13,61 @@ use App\Util\ActivityPub\Helpers;
 
 class StoryReactionDeliver implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
-	protected $story;
-	protected $status;
+    protected $story;
+    protected $status;
 
-	/**
-	 * Delete the job if its models no longer exist.
-	 *
-	 * @var bool
-	 */
-	public $deleteWhenMissingModels = true;
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
-	/**
-	 * Create a new job instance.
-	 *
-	 * @return void
-	 */
-	public function __construct(Story $story, Status $status)
-	{
-		$this->story = $story;
-		$this->status = $status;
-	}
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Story $story, Status $status)
+    {
+        $this->story = $story;
+        $this->status = $status;
+    }
 
-	/**
-	 * Execute the job.
-	 *
-	 * @return void
-	 */
-	public function handle()
-	{
-		$story = $this->story;
-		$status = $this->status;
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $story = $this->story;
+        $status = $this->status;
 
-		if($story->local == true) {
-			return;
-		}
+        if ($story->local == true) {
+            return;
+        }
 
-		$target = $story->profile;
-		$actor = $status->profile;
-		$to = $target->inbox_url;
+        $target = $story->profile;
+        $actor = $status->profile;
+        $to = $target->inbox_url;
 
-		$payload = [
-			'@context' => 'https://www.w3.org/ns/activitystreams',
-			'id' => $status->permalink(),
-			'type' => 'Story:Reaction',
-			'to' => $target->permalink(),
-			'actor' => $actor->permalink(),
-			'content' => $status->caption,
-			'inReplyTo' => $story->object_id,
-			'published' => $status->created_at->toAtomString()
-		];
+        $payload = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id' => $status->permalink(),
+            'type' => 'Story:Reaction',
+            'to' => $target->permalink(),
+            'actor' => $actor->permalink(),
+            'content' => $status->caption,
+            'inReplyTo' => $story->object_id,
+            'published' => $status->created_at->toAtomString()
+        ];
 
-		Helpers::sendSignedObject($actor, $to, $payload);
-	}
+        Helpers::sendSignedObject($actor, $to, $payload);
+    }
 }

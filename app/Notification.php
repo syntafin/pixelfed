@@ -42,5 +42,4 @@ class Notification extends Model
     {
         return $this->hasOne(MediaTag::class, 'item_id', 'id');
     }
-
 }

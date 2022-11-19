@@ -56,10 +56,10 @@ class LoginController extends Controller
             'password'        => 'required|string|min:6',
         ];
 
-        if(config('captcha.enabled')) {
+        if (config('captcha.enabled')) {
             $rules['h-captcha-response'] = 'required|captcha';
         }
-        
+
         $this->validate($request, $rules);
     }
 
@@ -73,7 +73,7 @@ class LoginController extends Controller
      */
     protected function authenticated($request, $user)
     {
-        if($user->status == 'deleted') {
+        if ($user->status == 'deleted') {
             return;
         }
 

@@ -210,10 +210,10 @@ class Autolink extends Regex
 
     public function setAutolinkActiveUsersOnly($active)
     {
-    	$this->autolinkActiveUsersOnly = $active;
-    	$this->target = null;
+        $this->autolinkActiveUsersOnly = $active;
+        $this->target = null;
         $this->external = null;
-    	return $this;
+        return $this;
     }
 
     /**
@@ -446,7 +446,7 @@ class Autolink extends Regex
         $beginIndex = 0;
         foreach ($entities as $entity) {
             if (isset($entity['screen_name'])) {
-                if(Str::startsWith($entity['screen_name'], '@')) {
+                if (Str::startsWith($entity['screen_name'], '@')) {
                     $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);
                 } else {
                     $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);
@@ -560,12 +560,12 @@ class Autolink extends Regex
         }
         $entities = $this->extractor->extractMentionsOrListsWithIndices($tweet);
 
-        if($this->autolinkActiveUsersOnly == true) {
-        	$entities = collect($entities)
-        		->filter(function($entity) {
-        			return AutolinkService::mentionedUsernameExists($entity['screen_name']);
-        		})
-        		->toArray();
+        if ($this->autolinkActiveUsersOnly == true) {
+            $entities = collect($entities)
+                ->filter(function ($entity) {
+                    return AutolinkService::mentionedUsernameExists($entity['screen_name']);
+                })
+                ->toArray();
         }
 
         return $this->autoLinkEntities($tweet, $entities);
@@ -748,10 +748,10 @@ class Autolink extends Regex
         $attributes = [];
         $screen_name = $entity['screen_name'];
 
-        if($this->autolinkActiveUsersOnly == true) {
-        	if(!AutolinkService::mentionedUsernameExists($screen_name)) {
-        		return Str::of($screen_name)->startsWith('@') ? $screen_name : "@{$screen_name}";
-        	}
+        if ($this->autolinkActiveUsersOnly == true) {
+            if (!AutolinkService::mentionedUsernameExists($screen_name)) {
+                return Str::of($screen_name)->startsWith('@') ? $screen_name : "@{$screen_name}";
+            }
         }
 
         if (!empty($entity['list_slug'])) {

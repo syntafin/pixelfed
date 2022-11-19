@@ -14,39 +14,42 @@ use App\Services\StatusService;
 
 class HandleSpammerPipeline implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
-	protected $profile;
+    protected $profile;
 
-	public $deleteWhenMissingModels = true;
+    public $deleteWhenMissingModels = true;
 
-	public function __construct(Profile $profile)
-	{
-		$this->profile = $profile;
-	}
+    public function __construct(Profile $profile)
+    {
+        $this->profile = $profile;
+    }
 
-	public function handle()
-	{
-		$profile = $this->profile;
+    public function handle()
+    {
+        $profile = $this->profile;
 
-		$profile->unlisted = true;
-		$profile->cw = true;
-		$profile->no_autolink = true;
-		$profile->save();
+        $profile->unlisted = true;
+        $profile->cw = true;
+        $profile->no_autolink = true;
+        $profile->save();
 
-		Status::whereProfileId($profile->id)
-			->chunk(50, function($statuses) {
-				foreach($statuses as $status) {
-					$status->is_nsfw = true;
-					$status->scope = $status->scope === 'public' ? 'unlisted' : $status->scope;
-					$status->visibility = $status->scope;
-					$status->save();
-					StatusService::del($status->id, true);
-				}
-		});
+        Status::whereProfileId($profile->id)
+            ->chunk(50, function ($statuses) {
+                foreach ($statuses as $status) {
+                    $status->is_nsfw = true;
+                    $status->scope = $status->scope === 'public' ? 'unlisted' : $status->scope;
+                    $status->visibility = $status->scope;
+                    $status->save();
+                    StatusService::del($status->id, true);
+                }
+            });
 
-		Cache::forget('_api:statuses:recent_9:'.$profile->id);
+        Cache::forget('_api:statuses:recent_9:'.$profile->id);
 
-		return 1;
-	}
+        return 1;
+    }
 }

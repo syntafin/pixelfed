@@ -10,61 +10,63 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
-use Illuminate\Support\Facades\Redis;
 
 class FollowPipeline implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
-	protected $follower;
+    protected $follower;
 
-	/**
-	 * Delete the job if its models no longer exist.
-	 *
-	 * @var bool
-	 */
-	public $deleteWhenMissingModels = true;
-	
-	/**
-	 * Create a new job instance.
-	 *
-	 * @return void
-	 */
-	public function __construct($follower)
-	{
-		$this->follower = $follower;
-	}
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
-	/**
-	 * Execute the job.
-	 *
-	 * @return void
-	 */
-	public function handle()
-	{
-		$follower = $this->follower;
-		$actor = $follower->actor;
-		$target = $follower->target;
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct($follower)
+    {
+        $this->follower = $follower;
+    }
 
-		Cache::forget('profile:following:' . $actor->id);
-		Cache::forget('profile:following:' . $target->id);
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $follower = $this->follower;
+        $actor = $follower->actor;
+        $target = $follower->target;
 
-		if($target->domain || !$target->private_key) {
-			return;
-		}
+        Cache::forget('profile:following:' . $actor->id);
+        Cache::forget('profile:following:' . $target->id);
 
-		try {
-			$notification = new Notification();
-			$notification->profile_id = $target->id;
-			$notification->actor_id = $actor->id;
-			$notification->action = 'follow';
-			$notification->message = $follower->toText();
-			$notification->rendered = $follower->toHtml();
-			$notification->item_id = $target->id;
-			$notification->item_type = "App\Profile";
-			$notification->save();
-		} catch (Exception $e) {
-			Log::error($e);
-		}
-	}
+        if ($target->domain || !$target->private_key) {
+            return;
+        }
+
+        try {
+            $notification = new Notification();
+            $notification->profile_id = $target->id;
+            $notification->actor_id = $actor->id;
+            $notification->action = 'follow';
+            $notification->message = $follower->toText();
+            $notification->rendered = $follower->toHtml();
+            $notification->item_id = $target->id;
+            $notification->item_type = "App\Profile";
+            $notification->save();
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+    }
 }

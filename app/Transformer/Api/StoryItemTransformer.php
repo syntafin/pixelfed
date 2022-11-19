@@ -4,11 +4,9 @@ namespace App\Transformer\Api;
 
 use App\StoryItem;
 use League\Fractal;
-use Illuminate\Support\Str;
 
 class StoryItemTransformer extends Fractal\TransformerAbstract
 {
-
     public function transform(StoryItem $item)
     {
         return [
@@ -24,5 +22,4 @@ class StoryItemTransformer extends Fractal\TransformerAbstract
             'seen'                      => $item->story->seen(),
         ];
     }
-
 }

@@ -6,11 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Follower extends Model
 {
-
     protected $fillable = ['profile_id', 'following_id', 'local_profile'];
 
-    const MAX_FOLLOWING = 7500;
-    const FOLLOW_PER_HOUR = 150;
+    public const MAX_FOLLOWING = 7500;
+    public const FOLLOW_PER_HOUR = 150;
 
     public function actor()
     {

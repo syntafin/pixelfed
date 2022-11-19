@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use DB;
 use App\{
     Hashtag,
     Status,
@@ -43,7 +42,6 @@ class FixHashtags extends Command
      */
     public function handle()
     {
-
         $this->info('       ____  _           ______         __  ');
         $this->info('      / __ \(_)  _____  / / __/__  ____/ /  ');
         $this->info('     / /_/ / / |/_/ _ \/ / /_/ _ \/ __  /   ');
@@ -57,12 +55,12 @@ class FixHashtags extends Command
         $this->info(' ');
 
         $missingCount = StatusHashtag::doesntHave('profile')->doesntHave('status')->count();
-        if($missingCount > 0) {
+        if ($missingCount > 0) {
             $this->info("Found {$missingCount} orphaned StatusHashtag records to delete ...");
             $this->info(' ');
             $bar = $this->output->createProgressBar($missingCount);
             $bar->start();
-            foreach(StatusHashtag::doesntHave('profile')->doesntHave('status')->get() as $tag) {
+            foreach (StatusHashtag::doesntHave('profile')->doesntHave('status')->get() as $tag) {
                 $tag->delete();
                 $bar->advance();
             }
@@ -72,12 +70,12 @@ class FixHashtags extends Command
             $this->info(' ');
             $this->info('Found no orphaned hashtags to delete!');
         }
-        
+
 
         $this->info(' ');
 
         $count = StatusHashtag::whereNull('status_visibility')->count();
-        if($count > 0) {
+        if ($count > 0) {
             $this->info("Found {$count} hashtags to fix ...");
             $this->info(' ');
         } else {
@@ -91,9 +89,9 @@ class FixHashtags extends Command
 
         StatusHashtag::with('status')
         ->whereNull('status_visibility')
-        ->chunk(50, function($tags) use($bar) {
-            foreach($tags as $tag) {
-                if(!$tag->status || !$tag->status->scope) {
+        ->chunk(50, function ($tags) use ($bar) {
+            foreach ($tags as $tag) {
+                if (!$tag->status || !$tag->status->scope) {
                     continue;
                 }
                 $tag->status_visibility = $tag->status->scope;

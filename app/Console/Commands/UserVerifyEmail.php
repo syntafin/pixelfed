@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use App\User;
 
 class UserVerifyEmail extends Command
@@ -41,7 +40,7 @@ class UserVerifyEmail extends Command
     {
         $user = User::whereUsername($this->argument('username'))->first();
 
-        if(!$user) {
+        if (!$user) {
             $this->error('Username not found');
             return;
         }

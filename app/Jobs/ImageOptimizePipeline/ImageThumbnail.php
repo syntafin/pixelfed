@@ -13,7 +13,10 @@ use Illuminate\Queue\SerializesModels;
 
 class ImageThumbnail implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $media;
 
@@ -23,7 +26,7 @@ class ImageThumbnail implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -42,7 +45,7 @@ class ImageThumbnail implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if(!$media) {
+        if (!$media) {
             return;
         }
         $path = storage_path('app/'.$media->media_path);

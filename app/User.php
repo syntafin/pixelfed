@@ -10,7 +10,10 @@ use App\Util\RateLimit\User as UserRateLimit;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, HasApiTokens, UserRateLimit;
+    use Notifiable;
+    use SoftDeletes;
+    use HasApiTokens;
+    use UserRateLimit;
 
     /**
      * The attributes that should be mutated to dates.
@@ -34,8 +37,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'email', 'password', 'is_admin', 'remember_token', 
-        'email_verified_at', '2fa_enabled', '2fa_secret', 
+        'email', 'password', 'is_admin', 'remember_token',
+        'email_verified_at', '2fa_enabled', '2fa_secret',
         '2fa_backup_codes', '2fa_setup_at', 'deleted_at',
         'updated_at'
     ];
@@ -92,5 +95,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(AccountInterstitial::class);
     }
-
 }

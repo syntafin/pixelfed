@@ -4,9 +4,10 @@ namespace App\Util\Blurhash;
 
 use InvalidArgumentException;
 
-class Blurhash {
-
-    public static function encode(array $image, int $components_x = 4, int $components_y = 4, bool $linear = false): string {
+class Blurhash
+{
+    public static function encode(array $image, int $components_x = 4, int $components_y = 4, bool $linear = false): string
+    {
         if (($components_x < 1 || $components_x > 9) || ($components_y < 1 || $components_y > 9)) {
             throw new InvalidArgumentException("x and y component counts must be between 1 and 9 inclusive.");
         }
@@ -62,7 +63,7 @@ class Blurhash {
         $max_ac_component = 0;
         foreach ($components as $component) {
             $component[] = $max_ac_component;
-            $max_ac_component = max ($component);
+            $max_ac_component = max($component);
         }
 
         $quant_max_ac_component = (int) max(0, min(82, floor($max_ac_component * 166 - 0.5)));
@@ -83,7 +84,8 @@ class Blurhash {
         return $blurhash;
     }
 
-    public static function decode (string $blurhash, int $width, int $height, float $punch = 1.0, bool $linear = false): array {
+    public static function decode(string $blurhash, int $width, int $height, float $punch = 1.0, bool $linear = false): array
+    {
         if (empty($blurhash) || strlen($blurhash) < 6) {
             throw new InvalidArgumentException("Blurhash string must be at least 6 characters");
         }

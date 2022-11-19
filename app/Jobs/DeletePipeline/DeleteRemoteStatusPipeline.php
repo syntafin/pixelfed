@@ -3,7 +3,6 @@
 namespace App\Jobs\DeletePipeline;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -26,7 +25,10 @@ use App\Jobs\MediaPipeline\MediaDeletePipeline;
 
 class DeleteRemoteStatusPipeline implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $status;
 
@@ -61,7 +63,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         MediaTag::whereStatusId($status->id)->delete();
         Media::whereStatusId($status->id)
             ->get()
-            ->each(function($media) {
+            ->each(function ($media) {
                 MediaDeletePipeline::dispatchNow($media);
             });
         Mention::whereStatusId($status->id)->forceDelete();

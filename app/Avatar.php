@@ -19,7 +19,7 @@ class Avatar extends Model
         'last_fetched_at',
         'last_processed_at'
     ];
-    
+
     protected $fillable = ['profile_id'];
 
     protected $visible = [
@@ -31,6 +31,6 @@ class Avatar extends Model
 
     public function profile()
     {
-    	return $this->belongsTo(Profile::class);
+        return $this->belongsTo(Profile::class);
     }
 }

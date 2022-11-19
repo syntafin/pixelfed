@@ -7,10 +7,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Http\File;
 use Cache;
 use FFMpeg;
-use Storage;
 use App\Media;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Util\Media\Blurhash;
@@ -19,7 +17,10 @@ use App\Services\StatusService;
 
 class VideoThumbnail implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $media;
 
@@ -41,7 +42,7 @@ class VideoThumbnail implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if($media->mime != 'video/mp4') {
+        if ($media->mime != 'video/mp4') {
             return;
         }
         $base = $media->media_path;
@@ -63,16 +64,14 @@ class VideoThumbnail implements ShouldQueue
             $media->save();
 
             $blurhash = Blurhash::generate($media);
-            if($blurhash) {
+            if ($blurhash) {
                 $media->blurhash = $blurhash;
                 $media->save();
             }
-
         } catch (Exception $e) {
-            
         }
 
-        if($media->status_id) {
+        if ($media->status_id) {
             Cache::forget('status:transformer:media:attachments:' . $media->status_id);
             MediaService::del($media->status_id);
             Cache::forget('status:thumb:nsfw0' . $media->status_id);

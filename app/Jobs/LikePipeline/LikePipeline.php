@@ -2,8 +2,7 @@
 
 namespace App\Jobs\LikePipeline;
 
-use Cache, DB, Log;
-use Illuminate\Support\Facades\Redis;
+use DB;
 use App\{Like, Notification};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,7 +17,10 @@ use App\Services\StatusService;
 
 class LikePipeline implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $like;
 
@@ -64,7 +66,7 @@ class LikePipeline implements ShouldQueue
 
         StatusService::refresh($status->id);
 
-        if($status->url && $actor->domain == null) {
+        if ($status->url && $actor->domain == null) {
             return $this->remoteLikeDeliver();
         }
 
@@ -89,7 +91,6 @@ class LikePipeline implements ShouldQueue
             $notification->item_id = $status->id;
             $notification->item_type = "App\Status";
             $notification->save();
-
         } catch (Exception $e) {
         }
     }

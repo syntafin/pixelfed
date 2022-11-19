@@ -25,7 +25,6 @@ class AddRemoteUrlToStoriesTable extends Migration
             $table->unsignedInteger('width')->nullable();
             $table->unsignedInteger('height')->nullable();
         });
-
     }
 
     /**

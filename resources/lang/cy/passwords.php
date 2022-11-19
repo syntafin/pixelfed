@@ -12,7 +12,7 @@ return [
     | has failed, such as for an invalid token or invalid new password.
     |
     */
-    
+
     'password' => 'Rhaid i\'r cyfrineiriau fod o leiaf chwe nod ac yn cyfateb i\'r cadarnhad.',
     'reset'    => 'Mae eich cyfrinair wedi\'i ailosod!',
     'sent'     => 'Os yw\'ch cyfeiriad e-bost yn bodoli yn ein cronfa ddata, byddwch yn derbyn dolen adfer cyfrinair yn eich cyfeiriad e-bost mewn ychydig funudau. Gwiriwch eich ffolder sbam os na dderbynioch yr e-bost hwn.',

@@ -8,8 +8,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-use Cache, Log;
-use Illuminate\Support\Facades\Redis;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use App\FollowRequest;
@@ -18,7 +16,10 @@ use App\Transformer\ActivityPub\Verb\Follow;
 
 class FollowActivityPubDeliver implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $followRequest;
 
@@ -28,7 +29,7 @@ class FollowActivityPubDeliver implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -50,8 +51,8 @@ class FollowActivityPubDeliver implements ShouldQueue
         $actor = $follow->actor;
         $target = $follow->target;
 
-        if($target->domain == null || $target->inbox_url == null || !$actor->private_key) {
-        	return;
+        if ($target->domain == null || $target->inbox_url == null || !$actor->private_key) {
+            return;
         }
 
         $fractal = new Fractal\Manager();
@@ -59,7 +60,7 @@ class FollowActivityPubDeliver implements ShouldQueue
         $resource = new Fractal\Resource\Item($follow, new Follow());
         $activity = $fractal->createData($resource)->toArray();
         $url = $target->sharedInbox ?? $target->inbox_url;
-        
+
         Helpers::sendSignedObject($actor, $url, $activity);
     }
 }

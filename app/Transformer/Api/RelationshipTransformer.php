@@ -14,12 +14,12 @@ class RelationshipTransformer extends Fractal\TransformerAbstract
     public function transform(Profile $profile)
     {
         $auth = Auth::check();
-        if(!$auth) {
+        if (!$auth) {
             return [];
         }
         $user = $auth ? Auth::user()->profile : false;
         $requested = false;
-        if($user) {
+        if ($user) {
             $requested = FollowRequest::whereFollowerId($user->id)
                 ->whereFollowingId($profile->id)
                 ->exists();

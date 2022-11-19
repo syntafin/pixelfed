@@ -3,11 +3,10 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\HasSnowflakePrimary;
 
 class CollectionItem extends Model
 {
-	use HasSnowflakePrimary;
+    use HasSnowflakePrimary;
 
     public $fillable = [
         'collection_id',
@@ -15,16 +14,16 @@ class CollectionItem extends Model
         'object_id',
         'order'
     ];
-    
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
     public $incrementing = false;
-    
-	public function collection()
-	{
-		return $this->belongsTo(Collection::class);
-	}
+
+    public function collection()
+    {
+        return $this->belongsTo(Collection::class);
+    }
 }

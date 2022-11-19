@@ -80,7 +80,7 @@ return [
             'options' => [
                 'CacheControl' => 'max-age=31536000'
             ],
-            'root' => env('DO_SPACES_ROOT','/'),
+            'root' => env('DO_SPACES_ROOT', '/'),
             'throw' => true,
         ],
 
@@ -89,7 +89,7 @@ return [
             'visibility' => 'private',
             'root' => env('PF_BACKUP_DRIVER', 'local') == 'local' ?
                 storage_path('app/backups/') :
-                env('PF_BACKUP_ROOT','/'),
+                env('PF_BACKUP_ROOT', '/'),
             'key' => env('PF_BACKUP_KEY'),
             'secret' => env('PF_BACKUP_SECRET'),
             'endpoint' => env('PF_BACKUP_ENDPOINT'),

@@ -11,7 +11,10 @@ use Illuminate\Queue\SerializesModels;
 
 class ImageOptimize implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $media;
 
@@ -39,9 +42,9 @@ class ImageOptimize implements ShouldQueue
      */
     public function handle()
     {
-    	if(config('pixelfed.optimize_image') == false) {
-    		return;
-    	}
+        if (config('pixelfed.optimize_image') == false) {
+            return;
+        }
 
         $media = $this->media;
         $path = storage_path('app/'.$media->media_path);

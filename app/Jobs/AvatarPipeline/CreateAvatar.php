@@ -12,7 +12,10 @@ use Illuminate\Queue\SerializesModels;
 
 class CreateAvatar implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $profile;
 
@@ -22,7 +25,7 @@ class CreateAvatar implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *

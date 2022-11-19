@@ -52,23 +52,23 @@ class FixUsernames extends Command
 
         $restricted = RestrictedNames::get();
 
-        $users = User::chunk(100, function($users) use($affected, $restricted) {
-            foreach($users as $user) {
-                if($user->is_admin || $user->status == 'deleted') {
+        $users = User::chunk(100, function ($users) use ($affected, $restricted) {
+            foreach ($users as $user) {
+                if ($user->is_admin || $user->status == 'deleted') {
                     continue;
                 }
-                if(in_array(strtolower($user->username), array_map('strtolower', $restricted))) {
+                if (in_array(strtolower($user->username), array_map('strtolower', $restricted))) {
                     $affected->push($user);
                 }
                 $val = str_replace(['-', '_', '.'], '', $user->username);
-                if(!ctype_alnum($val)) {
+                if (!ctype_alnum($val)) {
                     $this->info('Found invalid username: ' . $user->username);
                     $affected->push($user);
                 }
             }
         });
-        
-        if($affected->count() > 0) {
+
+        if ($affected->count() > 0) {
             $this->info('Found: ' . $affected->count() . ' affected usernames');
 
             $opts = [
@@ -78,7 +78,7 @@ class FixUsernames extends Command
                 'Skip (do not replace. Use at your own risk)'
             ];
 
-            foreach($affected as $u) {
+            foreach ($affected as $u) {
                 $old = $u->username;
                 $this->info("Found user: {$old}");
                 $opt = $this->choice('Select fix method:', $opts, 3);
@@ -91,7 +91,7 @@ class FixUsernames extends Command
 
                     case $opts[1]:
                         $new = filter_var($old, FILTER_SANITIZE_STRING|FILTER_FLAG_STRIP_LOW);
-                        if(strlen($new) < 6) {
+                        if (strlen($new) < 6) {
                             $new = $new . '_' . str_random(4);
                         }
                         $this->info('New username: ' . $new);
@@ -105,14 +105,14 @@ class FixUsernames extends Command
                     case $opts[3]:
                         $new = false;
                         break;
-                    
+
                     default:
                         $new = "user_" . str_random(6);
                         break;
                 }
 
-                if($new) {
-                    DB::transaction(function() use($u, $new) {
+                if ($new) {
+                    DB::transaction(function () use ($u, $new) {
                         $profile = $u->profile;
                         $profile->username = $new;
                         $u->username = $new;
@@ -140,7 +140,7 @@ class FixUsernames extends Command
 
         $count = $profiles->count();
 
-        if($count > 0) {
+        if ($count > 0) {
             $this->info("Found {$count} remote usernames to fix ...");
             $this->line(' ');
         } else {
@@ -148,17 +148,16 @@ class FixUsernames extends Command
             $this->line(' ');
             return;
         }
-        foreach($profiles as $p) {
+        foreach ($profiles as $p) {
             $this->info("Fixed $p->username => $p->webfinger");
             $p->username = $p->webfinger ?? "@{$p->username}@{$p->domain}";
-            if(Profile::whereUsername($p->username)->exists()) {
+            if (Profile::whereUsername($p->username)->exists()) {
                 return;
             }
             $p->save();
         }
-        if($count > 0) {
+        if ($count > 0) {
             $this->line(' ');
         }
-
     }
 }

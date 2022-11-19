@@ -9,8 +9,8 @@ use App\{
 };
 use App\Services\NotificationService;
 use App\Services\StatusService;
-use DB, Cache, Log;
-use Illuminate\Support\Facades\Redis;
+use DB;
+use Cache;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,7 +20,10 @@ use Illuminate\Queue\SerializesModels;
 
 class CommentPipeline implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $status;
     protected $comment;
@@ -34,7 +37,7 @@ class CommentPipeline implements ShouldQueue
 
     public $timeout = 5;
     public $tries = 1;
-    
+
     /**
      * Create a new job instance.
      *
@@ -59,29 +62,29 @@ class CommentPipeline implements ShouldQueue
         $target = $status->profile;
         $actor = $comment->profile;
 
-        if(config('database.default') === 'mysql') {
-	        DB::transaction(function() use($status) {
-	        	$count = DB::select( DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $status->id]);
-	        	$status->reply_count = count($count);
-	        	$status->save();
-	        });
+        if (config('database.default') === 'mysql') {
+            DB::transaction(function () use ($status) {
+                $count = DB::select(DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $status->id]);
+                $status->reply_count = count($count);
+                $status->save();
+            });
         }
 
         if ($actor->id === $target->id || $status->comments_disabled == true) {
             return true;
         }
-        
+
         $filtered = UserFilter::whereUserId($target->id)
             ->whereFilterableType('App\Profile')
             ->whereIn('filter_type', ['mute', 'block'])
             ->whereFilterableId($actor->id)
             ->exists();
 
-        if($filtered == true) {
+        if ($filtered == true) {
             return;
         }
 
-        DB::transaction(function() use($target, $actor, $comment) {
+        DB::transaction(function () use ($target, $actor, $comment) {
             $notification = new Notification();
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
@@ -97,13 +100,13 @@ class CommentPipeline implements ShouldQueue
             StatusService::del($comment->id);
         });
 
-        if($exists = Cache::get('status:replies:all:' . $status->id)) {
-        	if($exists && $exists->count() == 3) {
-        	} else {
-        		Cache::forget('status:replies:all:' . $status->id);
-        	}
+        if ($exists = Cache::get('status:replies:all:' . $status->id)) {
+            if ($exists && $exists->count() == 3) {
+            } else {
+                Cache::forget('status:replies:all:' . $status->id);
+            }
         } else {
-        	Cache::forget('status:replies:all:' . $status->id);
+            Cache::forget('status:replies:all:' . $status->id);
         }
     }
 }

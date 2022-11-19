@@ -5,19 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use DB;
-use Cache;
 
-use App\Comment;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\Lexer\Autolink;
-use App\Profile;
 use App\Status;
 use App\UserFilter;
 use League\Fractal;
 use App\Transformer\Api\StatusTransformer;
 use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Services\StatusService;
 
 class CommentController extends Controller
@@ -45,7 +41,7 @@ class CommentController extends Controller
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
-        if($status->comments_disabled == true) {
+        if ($status->comments_disabled == true) {
             return;
         }
 
@@ -55,11 +51,11 @@ class CommentController extends Controller
             ->whereFilterableId($profile->id)
             ->exists();
 
-        if($filtered == true) {
+        if ($filtered == true) {
             return;
         }
 
-        $reply = DB::transaction(function() use($comment, $status, $profile, $nsfw) {
+        $reply = DB::transaction(function () use ($comment, $status, $profile, $nsfw) {
             $scope = $profile->is_private == true ? 'private' : 'public';
             $autolink = Autolink::create()->autolink($comment);
             $reply = new Status();

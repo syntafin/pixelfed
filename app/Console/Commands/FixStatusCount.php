@@ -39,8 +39,8 @@ class FixStatusCount extends Command
     public function handle()
     {
         Profile::whereNull('domain')
-        ->chunk(50, function($profiles) {
-            foreach($profiles as $profile) {
+        ->chunk(50, function ($profiles) {
+            foreach ($profiles as $profile) {
                 $profile->status_count = $profile->statuses()
                 ->getQuery()
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])

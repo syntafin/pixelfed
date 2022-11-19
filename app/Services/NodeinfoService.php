@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\ConnectionException;
@@ -11,12 +10,12 @@ class NodeinfoService
 {
     public static function get($domain)
     {
-    	$version = config('pixelfed.version');
-		$appUrl = config('app.url');
-		$headers = [
-			'Accept'     => 'application/json',
-			'User-Agent' => "(Pixelfed/{$version}; +{$appUrl})",
-		];
+        $version = config('pixelfed.version');
+        $appUrl = config('app.url');
+        $headers = [
+            'Accept'     => 'application/json',
+            'User-Agent' => "(Pixelfed/{$version}; +{$appUrl})",
+        ];
 
         $url = 'https://' . $domain;
         $wk = $url . '/.well-known/nodeinfo';
@@ -33,18 +32,18 @@ class NodeinfoService
             return false;
         }
 
-        if(!$res) {
+        if (!$res) {
             return false;
         }
 
         $json = $res->json();
 
-        if( !isset($json['links'])) {
+        if (!isset($json['links'])) {
             return false;
         }
 
-        if(is_array($json['links'])) {
-            if(isset($json['links']['href'])) {
+        if (is_array($json['links'])) {
+            if (isset($json['links']['href'])) {
                 $href = $json['links']['href'];
             } else {
                 $href = $json['links'][0]['href'];
@@ -56,7 +55,7 @@ class NodeinfoService
         $domain = parse_url($url, PHP_URL_HOST);
         $hrefDomain = parse_url($href, PHP_URL_HOST);
 
-        if($domain !== $hrefDomain) {
+        if ($domain !== $hrefDomain) {
             return 60;
         }
 

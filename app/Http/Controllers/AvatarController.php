@@ -7,7 +7,6 @@ use App\Jobs\AvatarPipeline\AvatarOptimize;
 use Auth;
 use Cache;
 use Illuminate\Http\Request;
-use Storage;
 
 class AvatarController extends Controller
 {
@@ -119,13 +118,13 @@ class AvatarController extends Controller
 
         $avatar = $profile->avatar;
 
-        if( $avatar->media_path == 'public/avatars/default.png' || 
+        if ($avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
             return;
         }
 
-        if(is_file(storage_path('app/' . $avatar->media_path))) {
+        if (is_file(storage_path('app/' . $avatar->media_path))) {
             @unlink(storage_path('app/' . $avatar->media_path));
         }
 

@@ -30,7 +30,7 @@ class Portfolio extends Model
     public function url()
     {
         $account = AccountService::get($this->profile_id);
-        if(!$account) {
+        if (!$account) {
             return null;
         }
 

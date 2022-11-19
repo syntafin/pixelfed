@@ -7,7 +7,7 @@ return [
     'network'           => 'Sieć',
     'discover'          => 'Odkrywaj',
     'viewMyProfile'     => 'Pokaż mój profil',
-	'myProfile'			=> 'Mój profil',
+    'myProfile'			=> 'Mój profil',
     'myTimeline'        => 'Moja oś czasu',
     'publicTimeline'    => 'Publiczna oś czasu',
     'remoteFollow'      => 'Zdalne śledzenie',
@@ -15,5 +15,5 @@ return [
     'admin'             => 'Administracja',
     'logout'            => 'Wyloguj się',
     'directMessages'    => 'Wiadomości bezpośrednie',
-	'composePost'		=> 'Uwtórz wpis',
+    'composePost'		=> 'Uwtórz wpis',
 ];

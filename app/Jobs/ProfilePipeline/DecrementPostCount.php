@@ -3,7 +3,6 @@
 namespace App\Jobs\ProfilePipeline;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -14,7 +13,10 @@ use App\Services\AccountService;
 
 class DecrementPostCount implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public $id;
 
@@ -39,11 +41,11 @@ class DecrementPostCount implements ShouldQueue
 
         $profile = Profile::find($id);
 
-        if(!$profile) {
+        if (!$profile) {
             return 1;
         }
 
-        if($profile->updated_at && $profile->updated_at->lt(now()->subDays(30))) {
+        if ($profile->updated_at && $profile->updated_at->lt(now()->subDays(30))) {
             $profile->status_count = Status::whereProfileId($id)->whereNull(['in_reply_to_id', 'reblog_of_id'])->count();
             $profile->save();
             AccountService::del($id);

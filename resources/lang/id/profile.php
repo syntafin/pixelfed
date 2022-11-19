@@ -1,4 +1,5 @@
 <?php
+
 return [
   'emptyTimeline'         => 'User ini belum memiliki posting!',
   'emptyFollowers'        => 'User ini belum punya pengikut!',

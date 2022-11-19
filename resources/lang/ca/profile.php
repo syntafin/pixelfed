@@ -1,4 +1,5 @@
 <?php
+
 return [
   'emptyTimeline'         => 'Aquest compte encara no ha publicat res!',
   'emptyFollowers'        => 'A aquest compte encara no el segueix ningú!',

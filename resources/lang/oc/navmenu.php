@@ -3,10 +3,10 @@
 return [
 
     'search'		 => 'Cercar',
-	'home'			 => 'Acuèlh',
-	'local'			 => 'Local',
-	'network'		 => 'Malhum',
-	'discover'		 => 'Descobrir',
+    'home'			 => 'Acuèlh',
+    'local'			 => 'Local',
+    'network'		 => 'Malhum',
+    'discover'		 => 'Descobrir',
     'viewMyProfile'  => 'Veire mon perfil',
     'myProfile'		 => 'Mon perfil',
     'myTimeline'     => 'Ma cronologia',

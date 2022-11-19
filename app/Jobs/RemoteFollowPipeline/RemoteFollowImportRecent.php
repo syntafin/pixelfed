@@ -20,7 +20,10 @@ use App\Util\ActivityPub\Helpers;
 
 class RemoteFollowImportRecent implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $actor;
     protected $profile;
@@ -62,7 +65,7 @@ class RemoteFollowImportRecent implements ShouldQueue
     public function fetchOutbox($url = false)
     {
         $url = ($url == false) ? $this->actor['outbox'] : $url;
-        if(Helpers::validateUrl($url) == false) {
+        if (Helpers::validateUrl($url) == false) {
             return;
         }
         $response = Zttp::withHeaders([
@@ -190,7 +193,7 @@ class RemoteFollowImportRecent implements ShouldQueue
                 Log::info('Skipping invalid attachment URL: ' . $url);
                 continue;
             }
-            
+
             $count++;
 
             if ($count === 1) {
@@ -230,7 +233,7 @@ class RemoteFollowImportRecent implements ShouldQueue
             $media->save();
 
             ImageThumbnail::dispatch($media);
-            
+
             @unlink($file);
 
             return true;

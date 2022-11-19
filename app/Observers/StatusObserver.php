@@ -33,7 +33,7 @@ class StatusObserver
      */
     public function updated(Status $status)
     {
-        if(in_array($status->scope, ['public', 'unlisted']) && in_array($status->type, ['photo', 'photo:album', 'video'])) {
+        if (in_array($status->scope, ['public', 'unlisted']) && in_array($status->type, ['photo', 'photo:album', 'video'])) {
             ProfileStatusService::add($status->profile_id, $status->id);
         }
     }

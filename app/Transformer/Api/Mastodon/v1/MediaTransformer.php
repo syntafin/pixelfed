@@ -20,7 +20,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'blurhash'      => $media->blurhash ?? 'U4Rfzst8?bt7ogayj[j[~pfQ9Goe%Mj[WBay'
         ];
 
-        if($media->width && $media->height) {
+        if ($media->width && $media->height) {
             $res['meta'] = [
                 'focus' => [
                     'x' => 0,

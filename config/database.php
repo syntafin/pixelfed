@@ -120,9 +120,9 @@ return [
 
     ],
 
-	'dbal' => [
-	    'types' => [
-	        'timestamp' => TimestampType::class,
-	    ],
-	],
+    'dbal' => [
+        'types' => [
+            'timestamp' => TimestampType::class,
+        ],
+    ],
 ];

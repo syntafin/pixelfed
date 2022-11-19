@@ -4,7 +4,8 @@ namespace App\Util\Blurhash;
 
 use InvalidArgumentException;
 
-class Base83 {
+class Base83
+{
     private const ALPHABET = [
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
@@ -16,7 +17,8 @@ class Base83 {
 
     private const BASE = 83;
 
-    public static function encode(int $value, int $length): string {
+    public static function encode(int $value, int $length): string
+    {
         if (floor($value / (self::BASE ** $length)) != 0) {
             throw new InvalidArgumentException('Specified length is too short to encode given value.');
         }
@@ -29,7 +31,8 @@ class Base83 {
         return $result;
     }
 
-    public static function decode(string $hash): int {
+    public static function decode(string $hash): int
+    {
         $result = 0;
         foreach (str_split($hash) as $char) {
             $result = $result * self::BASE + (int) array_search($char, self::ALPHABET, true);

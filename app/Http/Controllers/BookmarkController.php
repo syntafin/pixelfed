@@ -25,14 +25,15 @@ class BookmarkController extends Controller
         $status = Status::findOrFail($request->input('item'));
 
         $bookmark = Bookmark::firstOrCreate(
-            ['status_id' => $status->id], ['profile_id' => $profile->id]
+            ['status_id' => $status->id],
+            ['profile_id' => $profile->id]
         );
 
         if (!$bookmark->wasRecentlyCreated) {
-        	BookmarkService::del($profile->id, $status->id);
+            BookmarkService::del($profile->id, $status->id);
             $bookmark->delete();
         } else {
-        	BookmarkService::add($profile->id, $status->id);
+            BookmarkService::add($profile->id, $status->id);
         }
 
         if ($request->ajax()) {

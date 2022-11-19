@@ -9,19 +9,19 @@ use App\AccountInterstitial;
 
 class AccountInterstitialController extends Controller
 {
-	public function __construct()
-	{
-		$this->middleware('auth');
-	}
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function get(Request $request)
     {
-    	$interstitial = $request->user()
+        $interstitial = $request->user()
             ->interstitials()
             ->whereNull('read_at')
             ->first();
 
-        if(!$interstitial) {
+        if (!$interstitial) {
             $user = $request->user();
             $user->has_interstitial = false;
             $user->save();
@@ -30,7 +30,7 @@ class AccountInterstitialController extends Controller
 
         $meta = json_decode($interstitial->meta);
         $view = $interstitial->view;
-    	return view($view, compact('interstitial', 'meta'));
+        return view($view, compact('interstitial', 'meta'));
     }
 
     public function read(Request $request)
@@ -52,7 +52,7 @@ class AccountInterstitialController extends Controller
             ->whereType($request->input('type'))
             ->findOrFail($id);
 
-        if($action == 'appeal') {
+        if ($action == 'appeal') {
             $ai->appeal_requested_at = now();
             $ai->appeal_message = $request->input('appeal_message');
         }
@@ -64,12 +64,12 @@ class AccountInterstitialController extends Controller
             ->whereNull('read_at')
             ->exists();
 
-        if(!$more) {
+        if (!$more) {
             $user->has_interstitial = false;
             $user->save();
         }
 
-        if(in_array($ai->type, ['post.cw', 'post.unlist'])) {
+        if (in_array($ai->type, ['post.cw', 'post.unlist'])) {
             $redirect = Status::findOrFail($ai->item_id)->url();
         }
 

@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\AccountLog;
-use App\EmailVerification;
 use App\Instance;
 use App\Follower;
-use App\Media;
 use App\Profile;
-use App\User;
 use App\UserFilter;
-use App\Util\Lexer\PrettyNumber;
 use App\Util\ActivityPub\Helpers;
-use Auth, Cache, DB;
+use Auth;
+use Cache;
+use DB;
 use Illuminate\Http\Request;
 
 trait PrivacySettings
 {
-
     public function privacy()
     {
         $settings = Auth::user()->settings;
@@ -57,7 +53,7 @@ trait PrivacySettings
                 } else {
                     $settings->{$field} = true;
                 }
-             } elseif ($field == 'public_dm') {
+            } elseif ($field == 'public_dm') {
                 if ($form == 'on') {
                     $settings->{$field} = true;
                 } else {
@@ -83,7 +79,7 @@ trait PrivacySettings
     }
 
     public function mutedUsers()
-    {   
+    {
         $pid = Auth::user()->profile->id;
         $ids = (new UserFilter())->mutedUserIds($pid);
         $users = Profile::whereIn('id', $ids)->simplePaginate(15);
@@ -91,7 +87,7 @@ trait PrivacySettings
     }
 
     public function mutedUsersUpdate(Request $request)
-    {   
+    {
         $this->validate($request, [
             'profile_id' => 'required|integer|min:1'
         ]);
@@ -118,7 +114,7 @@ trait PrivacySettings
 
 
     public function blockedUsersUpdate(Request $request)
-    {   
+    {
         $this->validate($request, [
             'profile_id' => 'required|integer|min:1'
         ]);
@@ -152,12 +148,12 @@ trait PrivacySettings
             'domain' => 'required|url|min:1|max:120'
         ]);
         $domain = $request->input('domain');
-        if(Helpers::validateUrl($domain) == false) {
+        if (Helpers::validateUrl($domain) == false) {
             return abort(400, 'Invalid domain');
         }
         $domain = parse_url($domain, PHP_URL_HOST);
         $instance = Instance::firstOrCreate(['domain' => $domain]);
-        $filter = new UserFilter;
+        $filter = new UserFilter();
         $filter->user_id = Auth::user()->profile->id;
         $filter->filterable_id = $instance->id;
         $filter->filterable_type = 'App\Instance';
@@ -198,7 +194,7 @@ trait PrivacySettings
         $profile = Auth::user()->profile;
         $settings = Auth::user()->settings;
 
-        if($mode !== 'keep-all') {
+        if ($mode !== 'keep-all') {
             switch ($mode) {
                 case 'mutual-only':
                     $following = $profile->following()->pluck('profiles.id');
@@ -213,7 +209,7 @@ trait PrivacySettings
                 case 'remove-all':
                     Follower::whereFollowingId($profile->id)->delete();
                     break;
-                
+
                 default:
                     # code...
                     break;

@@ -1,4 +1,5 @@
 <?php
+
 return [
   'likedPhoto'          => 'menyukai foto kamu.',
   'startedFollowingYou' => 'mulai mengikuti kamu.',

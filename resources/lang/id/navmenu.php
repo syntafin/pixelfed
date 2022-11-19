@@ -1,4 +1,5 @@
 <?php
+
 return [
     'viewMyProfile'  => 'Lihat profil saya',
     'myTimeline'     => 'Linimasa Saya',

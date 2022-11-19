@@ -7,16 +7,16 @@ use Illuminate\Support\Facades\Redis;
 
 class ProfileStatusService
 {
-    const CACHE_KEY = 'pf:services:profile-statuses:ids:';
-    const COLD_CHECK_KEY = 'pf:services:profile-statuses:id-ttl:';
-    const FALLOFF_LIMIT = 40;
+    public const CACHE_KEY = 'pf:services:profile-statuses:ids:';
+    public const COLD_CHECK_KEY = 'pf:services:profile-statuses:id-ttl:';
+    public const FALLOFF_LIMIT = 40;
 
     public static function get($id, $start = 0, $stop = 8)
     {
         $key = self::CACHE_KEY . $id;
-        if(!Redis::zscore(self::COLD_CHECK_KEY, $id)) {
+        if (!Redis::zscore(self::COLD_CHECK_KEY, $id)) {
             $res = self::coldFetch($id);
-            if($res && count($res)) {
+            if ($res && count($res)) {
                 return array_slice($res, $start, $stop);
             }
         }
@@ -31,7 +31,7 @@ class ProfileStatusService
 
     public static function add($pid, $sid)
     {
-        if(self::count($pid) > self::FALLOFF_LIMIT) {
+        if (self::count($pid) > self::FALLOFF_LIMIT) {
             Redis::zpopmin(self::CACHE_KEY . $pid);
         }
         return Redis::zadd(self::CACHE_KEY . $pid, $sid, $sid);
@@ -55,8 +55,8 @@ class ProfileStatusService
             ->pluck('id')
             ->toArray();
 
-        if($ids && count($ids)) {
-            foreach($ids as $id) {
+        if ($ids && count($ids)) {
+            foreach ($ids as $id) {
                 self::add($pid, $id);
             }
         }

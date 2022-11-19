@@ -1,4 +1,5 @@
 <?php
+
 return [
   'likedPhoto'          => 'li ha agradat la vostra publicació.',
   'likedComment'        => 'li ha agradat el vostre comentari.',

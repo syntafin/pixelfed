@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\AccountLog;
 use App\EmailVerification;
 use App\Status;
@@ -95,7 +94,7 @@ class ApiV1Dot1Controller extends Controller
                     ->count();
 
                 $rpid = $object->profile_id;
-            break;
+                break;
 
             case 'user':
                 $object = Profile::find($object_id);
@@ -108,12 +107,12 @@ class ApiV1Dot1Controller extends Controller
                     ->whereObjectType('App\Profile')
                     ->count();
                 $rpid = $object->id;
-            break;
+                break;
 
             default:
                 return $this->error("Invalid report type", 400, ["error_code" => "ERROR_REPORT_OBJECT_TYPE_INVALID"]);
-            break;
-      }
+                break;
+        }
 
         if ($exists !== 0) {
             return $this->error("Duplicate report", 400, ["error_code" => "ERROR_REPORT_DUPLICATE"]);
@@ -123,7 +122,7 @@ class ApiV1Dot1Controller extends Controller
             return $this->error("Cannot self report", 400, ["error_code" => "ERROR_NO_SELF_REPORTS"]);
         }
 
-        $report = new Report;
+        $report = new Report();
         $report->profile_id = $user->profile_id;
         $report->user_id = $user->id;
         $report->object_id = $object->id;
@@ -153,13 +152,13 @@ class ApiV1Dot1Controller extends Controller
 
         $avatar = $user->profile->avatar;
 
-        if( $avatar->media_path == 'public/avatars/default.png' ||
+        if ($avatar->media_path == 'public/avatars/default.png' ||
             $avatar->media_path == 'public/avatars/default.jpg'
         ) {
             return AccountService::get($user->profile_id);
         }
 
-        if(is_file(storage_path('app/' . $avatar->media_path))) {
+        if (is_file(storage_path('app/' . $avatar->media_path))) {
             @unlink(storage_path('app/' . $avatar->media_path));
         }
 
@@ -189,21 +188,21 @@ class ApiV1Dot1Controller extends Controller
 
         $account = AccountService::get($id);
 
-        if(!$account || $account['username'] !== $request->input('username')) {
+        if (!$account || $account['username'] !== $request->input('username')) {
             return $this->json([]);
         }
 
         $posts = ProfileStatusService::get($id);
 
-        if(!$posts) {
+        if (!$posts) {
             return $this->json([]);
         }
 
         $res = collect($posts)
-            ->map(function($id) {
+            ->map(function ($id) {
                 return StatusService::get($id);
             })
-            ->filter(function($post) {
+            ->filter(function ($post) {
                 return $post && isset($post['account']);
             })
             ->toArray();
@@ -226,14 +225,14 @@ class ApiV1Dot1Controller extends Controller
             'current_password' => 'bail|required|current_password',
             'new_password' => 'required|min:' . config('pixelfed.min_password_length', 8),
             'confirm_password' => 'required|same:new_password'
-        ],[
+        ], [
             'current_password' => 'The password you entered is incorrect'
         ]);
 
         $user->password = bcrypt($request->input('new_password'));
         $user->save();
 
-        $log = new AccountLog;
+        $log = new AccountLog();
         $log->user_id = $user->id;
         $log->item_id = $user->id;
         $log->item_type = 'App\User';
@@ -268,7 +267,7 @@ class ApiV1Dot1Controller extends Controller
             ->groupBy('ip_address')
             ->limit(10)
             ->get()
-            ->map(function($item) use($agent, $currentIp) {
+            ->map(function ($item) use ($agent, $currentIp) {
                 $agent->setUserAgent($item->user_agent);
                 return [
                     'id' => $item->id,
@@ -321,7 +320,7 @@ class ApiV1Dot1Controller extends Controller
             ->where('created_at', '>', now()->subDays(14))
             ->limit(10)
             ->get()
-            ->map(function($mail) use($user, $from) {
+            ->map(function ($mail) use ($user, $from) {
                 return [
                     'type' => 'Email Verification',
                     'subject' => 'Confirm Email',
@@ -338,7 +337,7 @@ class ApiV1Dot1Controller extends Controller
             ->orderByDesc('created_at')
             ->limit(10)
             ->get()
-            ->map(function($mail) use($user, $from) {
+            ->map(function ($mail) use ($user, $from) {
                 return [
                     'type' => 'Password Reset',
                     'subject' => 'Reset Password Notification',
@@ -355,7 +354,7 @@ class ApiV1Dot1Controller extends Controller
             ->orderByDesc('created_at')
             ->limit(10)
             ->get()
-            ->map(function($mail) use($user, $from) {
+            ->map(function ($mail) use ($user, $from) {
                 return [
                     'type' => 'Password Change',
                     'subject' => 'Password Change',
@@ -388,7 +387,7 @@ class ApiV1Dot1Controller extends Controller
         abort_if(!$user, 403);
         abort_if($user->status != null, 403);
 
-        $res = $user->tokens->sortByDesc('created_at')->take(10)->map(function($token, $key) {
+        $res = $user->tokens->sortByDesc('created_at')->take(10)->map(function ($token, $key) {
             return [
                 'id' => $key + 1,
                 'did' => encrypt($token->id),

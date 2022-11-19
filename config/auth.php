@@ -66,7 +66,7 @@ return [
 
     'providers' => [
 
-    	// Comment out or remove below for LDAP
+        // Comment out or remove below for LDAP
         'users' => [
             'driver' => 'eloquent',
             'model'  => App\User::class,

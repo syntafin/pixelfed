@@ -40,7 +40,7 @@ class CatchUnoptimizedMedia extends Command
      */
     public function handle()
     {
-        DB::transaction(function() {
+        DB::transaction(function () {
             Media::whereNull('processed_at')
                 ->where('skip_optimize', '!=', true)
                 ->whereNull('remote_url')
@@ -51,11 +51,11 @@ class CatchUnoptimizedMedia extends Command
                     'image/jpeg',
                     'image/png',
                 ])
-                ->chunk(50, function($medias) {
+                ->chunk(50, function ($medias) {
                     foreach ($medias as $media) {
                         ImageOptimize::dispatch($media);
                     }
                 });
-         });
+        });
     }
 }

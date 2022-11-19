@@ -12,7 +12,10 @@ use Illuminate\Queue\SerializesModels;
 
 class ImageResize implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $media;
 
@@ -22,7 +25,7 @@ class ImageResize implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -41,7 +44,7 @@ class ImageResize implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if(!$media) {
+        if (!$media) {
             return;
         }
         $path = storage_path('app/'.$media->media_path);
