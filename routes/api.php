@@ -149,6 +149,13 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::group(['prefix' => 'directory'], function () use($middleware) {
 			Route::get('listing', 'PixelfedDirectoryController@get');
 		});
+
+		Route::group(['prefix' => 'auth'], function () use($middleware) {
+			Route::get('iarpfc', 'Api\ApiV1Dot1Controller@inAppRegistrationPreFlightCheck');
+			Route::post('iar', 'Api\ApiV1Dot1Controller@inAppRegistration');
+			Route::post('iarc', 'Api\ApiV1Dot1Controller@inAppRegistrationConfirm');
+			Route::get('iarer', 'Api\ApiV1Dot1Controller@inAppRegistrationEmailRedirect');
+		});
 	});
 
 	Route::group(['prefix' => 'live'], function() use($middleware) {

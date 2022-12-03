@@ -3,9 +3,11 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.4...dev)
 
 ### New Features
+- Mobile App Registration ([#3829](https://github.com/pixelfed/pixelfed/pull/3829))
 - Portfolios ([#3705](https://github.com/pixelfed/pixelfed/pull/3705))
 - Server Directory ([#3762](https://github.com/pixelfed/pixelfed/pull/3762))
 - Manually verify email address (php artisan user:verifyemail) ([682f5f0f](https://github.com/pixelfed/pixelfed/commit/682f5f0f))
+- Manually generate in-app registration confirmation links (php artisan user:app-magic-link) ([73eb9e36](https://github.com/pixelfed/pixelfed/commit/73eb9e36))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -26,7 +28,14 @@
 - Update landing view, add `app.name` and `app.short_description` for better customizability ([bda9d16b](https://github.com/pixelfed/pixelfed/commit/bda9d16b))
 - Update Profile, fix avatarUrl paths. Fixes #3559 #3634 ([989e4249](https://github.com/pixelfed/pixelfed/commit/989e4249))
 - Update InboxPipeline, bump request timeout from 5s to 60s ([bb120019](https://github.com/pixelfed/pixelfed/commit/bb120019))
-- Update web routes, fix missing hom route ([a9f4ddfc](https://github.com/pixelfed/pixelfed/commit/a9f4ddfc))
+- Update web routes, fix missing home route ([a9f4ddfc](https://github.com/pixelfed/pixelfed/commit/a9f4ddfc))
+- Allow forceHttps to be disabled, fixes #3710 ([a31bdec7](https://github.com/pixelfed/pixelfed/commit/a31bdec7))
+- Update MediaStorageService, fix size check bug ([319f0ba5](https://github.com/pixelfed/pixelfed/commit/319f0ba5))
+- Update AvatarSync, fix sync skipping recently fetched avatars by setting last_fetched_at to null before refetching ([a83fc798](https://github.com/pixelfed/pixelfed/commit/a83fc798))
+- Refactor AvatarStorage to support migrating avatars to cloud storage, fix remote avatar refetching and merge AvatarSync commands and add deprecation notice to avatar:sync command ([223aea47](https://github.com/pixelfed/pixelfed/commit/223aea47))
+- Update AvatarStorage, improve overview calculations ([733b9fd0](https://github.com/pixelfed/pixelfed/commit/733b9fd0))
+- Update filesystem config, fix DO Spaces root default ([720b6eb3](https://github.com/pixelfed/pixelfed/commit/720b6eb3))
+- Update Avatar pipeline, fix cloud storage media_path ([02edd19d](https://github.com/pixelfed/pixelfed/commit/02edd19d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
